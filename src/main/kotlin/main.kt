@@ -1,5 +1,8 @@
 package instanceRunner
 
 fun main(args: Array<String>){
-    print("Hello world")
+    Application().apply {
+        this.parseCommandLineArguments(args)
+        this.printArgs()
+    }
 }
