@@ -19,6 +19,8 @@ class Application {
 
     fun printArgs() = print(String.format("$n, $k, $h, index: `$studentsIndex`, program: `$programToExecute`"))
 
+    fun toProgramOptions() = ProgramOptions(programToExecute, n, k, h)
+
     private fun validateArguments() {
         assert(n in arrayOf(10, 20, 50, 100, 200, 500, 1000)) {"n=$n is not in the range [10, 20, 50, 100, 200, 500, 1000]."}
         assert(k in 1..10) {"k=$k is not valid. It must be a natural number in range <1,10>"}

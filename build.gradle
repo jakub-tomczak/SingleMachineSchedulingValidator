@@ -7,9 +7,11 @@ version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
+    implementation 'com.beust:klaxon:3.0.1'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile group: 'args4j', name: 'args4j', version: '2.33'
 }
