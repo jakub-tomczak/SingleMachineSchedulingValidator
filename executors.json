@@ -1,7 +1,14 @@
 [
   {
-    "language": "python",
-    "extension": "py",
+    "extension": [
+      "py"
+    ],
     "executorPath": "python"
+  },
+  {
+    "extension" : [
+      "jar"
+    ],
+    "executorPath": "java"
   }
 ]

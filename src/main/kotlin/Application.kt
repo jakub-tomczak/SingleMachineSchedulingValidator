@@ -11,15 +11,17 @@ class Application {
         try {
             parser.parseArgument(args.toList())
         } catch(exception : CmdLineException) {
-            print("Could not parse cmd\n${exception.message}")
+            println("Could not parse arguments:\n${exception.message}")
         }
 
+        //TODO
+        //add loading options from JSON
         validateArguments()
     }
 
-    fun printArgs() = print(String.format("$n, $k, $h, index: `$studentsIndex`, program: `$programToExecute`"))
+    fun printArgs() = println(String.format("$n, $k, $h, index: `$studentsIndex`, program: `$programToExecute`"))
 
-    fun toProgramOptions() = ProgramOptions(programToExecute, n, k, h)
+    fun getExecutionOptions() = ExecutionOptions(programToExecute, Instance(n, k, h))
 
     private fun validateArguments() {
         assert(n in arrayOf(10, 20, 50, 100, 200, 500, 1000)) {"n=$n is not in the range [10, 20, 50, 100, 200, 500, 1000]."}
@@ -47,4 +49,11 @@ class Application {
     @Option(name="-index", usage = "Index of a student that written the program.")
     var studentsIndex = ""
         private set
+
+    //needed if instance or output files are in the different directory than an executable
+    var instancesDirectory = ""
+        private set
+    var outputDirectory = ""
+        private set
+
 }
