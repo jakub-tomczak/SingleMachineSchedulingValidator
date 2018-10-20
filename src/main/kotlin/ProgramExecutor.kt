@@ -12,7 +12,8 @@ class ProgramRunner(var executionOptions : ExecutionOptions, val executors : Arr
     fun execute() : ExecutionResult{
         getExecutorBasedFileOnExtension()?.let{
             val executionString = "${it.executorPath} ${executionOptions.getArgumentsList()}"
-            print("Trying to execute `$executionString`\nCWD is ${System.getProperty("user.dir")}.")
+            println("Trying to execute `$executionString`.")
+            println("CWD is ${System.getProperty("user.dir")}.")
             val executionTime = measureTimeMillis {executeInner(executionString)}
 
             return ExecutionResult(executionOptions.instance, lastLaunchResult, executionTime)

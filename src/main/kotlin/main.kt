@@ -17,6 +17,8 @@ fun main(args: Array<String>){
     val programRunner = ProgramRunner(executionOptions, executors)
 
     val executionResult = programRunner.execute()
-    print("\nRun time ${executionResult.executionTime} ms. Executed with success? ${executionResult.successfulExecution} ")
 
+    ResultValidator(application, executionOptions.instance)
+            .validateResult()
+    println("Execution code: ${executionResult.executionResult}, execution time ${executionResult.executionTime} ms.")
 }
