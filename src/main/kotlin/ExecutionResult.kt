@@ -1,3 +1,3 @@
 package instanceRunner
 
-class ExecutionResult(val executionResult: Int, val executionTime : Long)
+class ExecutionResult(val executionCode: Int, val executionTime : Long)
