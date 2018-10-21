@@ -20,5 +20,7 @@ fun main(args: Array<String>){
 
     ResultValidator(application, executionOptions.instance)
             .validateResult()
-    println("Execution code: ${executionResult.executionResult}, execution time ${executionResult.executionTime} ms.")
+    println("Execution code: ${executionResult.executionCode}, execution time ${executionResult.executionTime} ms.")
+    if (executionResult.executionCode != 0)
+        println("Check whether program's path is correct or it ends up correctly.")
 }
