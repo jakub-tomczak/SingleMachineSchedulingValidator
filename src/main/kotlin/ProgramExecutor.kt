@@ -5,6 +5,7 @@ import com.beust.klaxon.Klaxon
 import com.beust.klaxon.KlaxonException
 import java.io.File
 import java.io.FileNotFoundException
+import java.io.IOException
 import kotlin.system.exitProcess
 import kotlin.system.measureTimeMillis
 
@@ -14,12 +15,16 @@ class ProgramRunner(var executionOptions : ExecutionOptions, val executors : Arr
             val executionString = "${it.executorPath} ${executionOptions.getArgumentsList()}"
             println("Trying to execute `$executionString`.")
             println("CWD is ${System.getProperty("user.dir")}.")
-            val executionTime = measureTimeMillis {executeInner(executionString)}
-
-            return ExecutionResult(executionOptions.instance, lastLaunchResult, executionTime)
+            try{
+                val executionTime = measureTimeMillis {executeInner(executionString)}
+                return ExecutionResult(lastLaunchResult, executionTime)
+            } catch(e : IOException) {
+                println("Couldn't find the executor `${it.executorPath}`.")
+                exitProcess(-1)
+            }
         }
-        println("No appropriate executor found for the extension ${executionOptions.extension}.")
-        exitProcess(0)
+        println("No appropriate executor found for the extension `${executionOptions.extension}`.")
+        exitProcess(-1)
     }
 
     private fun executeInner(executionString: String){
