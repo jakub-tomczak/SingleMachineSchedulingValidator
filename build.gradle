@@ -2,7 +2,7 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.2.71'
 }
 
-group 'org.gradle.runner'
+group 'instanceRunner'
 version '1.0-SNAPSHOT'
 
 repositories {
@@ -11,9 +11,26 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.beust:klaxon:3.0.1'
+    compile 'com.beust:klaxon:3.0.1'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile group: 'args4j', name: 'args4j', version: '2.33'
+    testImplementation(
+            'org.junit.jupiter:junit-jupiter-api:5.1.0'
+    )
+    testRuntimeOnly(
+            'org.junit.jupiter:junit-jupiter-engine:5.1.0'
+    )
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'instanceRunner.MainKt'
+    }
+    from {
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
 }
 
 compileKotlin {
