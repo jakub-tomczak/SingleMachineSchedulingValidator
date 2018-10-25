@@ -4,7 +4,7 @@ import kotlin.system.exitProcess
 
 fun main(args: Array<String>){
     val application = Application().apply {
-        this.parseCommandLineArguments(args)
+        this.parseCommandLineArguments(args, useSimpleParser = true)
     }
 
     val executionOptions = application.getExecutionOptions()

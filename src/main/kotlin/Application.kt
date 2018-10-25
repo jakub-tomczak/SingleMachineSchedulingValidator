@@ -4,16 +4,21 @@ import org.kohsuke.args4j.CmdLineParser
 import org.kohsuke.args4j.Option
 import org.kohsuke.args4j.CmdLineException
 import java.io.File
+import kotlin.system.exitProcess
 
 class Application {
-    fun parseCommandLineArguments(args: Array<String>) {
-        val parser = CmdLineParser(this)
-
+    fun parseCommandLineArguments(args: Array<String>, useSimpleParser: Boolean = false) {
         try {
-            parser.parseArgument(args.toList())
+            if(useSimpleParser){
+                simpleParser(args)
+            } else {
+                advancedParser(args)
+            }
             println("Runner parameters: n=$n, k=$k, h=$h, program=`$programToExecute`, index=`$studentsIndex`.")
         } catch(exception : CmdLineException) {
-            println("Could not parse arguments:\n${exception.message}")
+            println("Could not parse arguments. Error message: \n${exception.message}")
+        } catch (exception: NumberFormatException) {
+            println("Could not parse arguments. Error ${exception.javaClass}, message: \n${exception.message}")
         }
 
         //TODO
@@ -43,6 +48,27 @@ class Application {
         //assert(programToExecute.isNotEmpty()) {"Program to execute name cannot be empty."}
     }
 
+    private fun simpleParser(args: Array<String>){
+        if(args.size !in 4..5 step 1){
+            println("Expected 4 or 5 arguments (programs name is optional). Got ${args.size}.")
+            exitProcess(1)
+        }
+
+        n = args[0].toInt()
+        k = args[1].toInt()
+        h = args[2].toDouble()
+        studentsIndex = args[3]
+
+        if(args.size == 5){
+            programToExecute = args[4]
+        }
+    }
+
+    private fun advancedParser(args: Array<String>){
+        val parser = CmdLineParser(this)
+        parser.parseArgument(args.toList())
+    }
+
     @Option(name = "-p", usage = "Name of the program to be executed.")
     var programToExecute = ""
         private set
@@ -66,6 +92,4 @@ class Application {
     //needed if instance or output files are in the different directory than an executable
     private var instancesDir = ""
     private var outputDir = ""
-
-
 }
