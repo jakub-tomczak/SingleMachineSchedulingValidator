@@ -80,6 +80,7 @@ class ResultValidator(private val application: Application, private val instance
         if(orderingResult.result == 0 || instanceData.tasks.isEmpty())
             return false
         val dueDate =  (instance.h * instanceData.tasksLength).toInt()
+        println("Checking feasibility. n=${instanceData.n}, k=${instanceData.k}, h=${instance.h}, dueDate=$dueDate.")
         var sum = 0
         var currentLength = 0
         for (taskIndex in orderingResult.tasksOrder){

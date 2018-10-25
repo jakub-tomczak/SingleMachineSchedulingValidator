@@ -11,6 +11,7 @@ class Application {
 
         try {
             parser.parseArgument(args.toList())
+            println("Runner parameters: n=$n, k=$k, h=$h, program=`$programToExecute`, index=`$studentsIndex`.")
         } catch(exception : CmdLineException) {
             println("Could not parse arguments:\n${exception.message}")
         }
