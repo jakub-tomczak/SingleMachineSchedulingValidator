@@ -15,8 +15,9 @@ class ResultValidator(private val application: Application, private val instance
 
     private fun loadInstance() : InstanceData {
         val filename = "${application.getInstancesDir()}${instance.getInstanceFilename()}"
-        println("Trying to load instance from `$filename`.")
-        val instanceData = InstanceData(instance.n, instance.k)
+        val instanceData = InstanceData(instance.n, instance.k-1)
+        println("Trying to load instance from `$filename`. k=${instanceData.k}.")
+
         try{
             File(filename)
                     .inputStream()
@@ -25,7 +26,7 @@ class ResultValidator(private val application: Application, private val instance
                         //2 - first line of the file + first line of the expected instance
                         //k-times first line of an instance
                         //k*n - number of lines in skipped instances
-                        it.drop(2 + instance.k + instance.k*instance.n).take(instance.n).toList()
+                        it.drop(2 + instanceData.k + instanceData.k*instanceData.n).take(instanceData.n).toList()
                     }
                     .forEach {
                         val splitted = it

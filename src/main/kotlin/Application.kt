@@ -37,7 +37,7 @@ class Application {
 
     private fun validateArguments() {
         assert(n in arrayOf(10, 20, 50, 100, 200, 500, 1000)) {"n=$n is not in the range [10, 20, 50, 100, 200, 500, 1000]."}
-        assert(k in 0..9) {"k=$k is not valid. It must be a natural number in range <0,9>"}
+        assert(k in 1..10) {"k=$k is not valid. It must be a natural number in range <0,9>"}
         assert(h in 0..1) {"h=$h is not valid. It must be a real number in range <0,1>"}
         //assert(programToExecute.isNotEmpty()) {"Program to execute name cannot be empty."}
     }
