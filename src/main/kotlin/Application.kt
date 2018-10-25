@@ -28,7 +28,8 @@ class Application {
 
     fun printArgs() = println(String.format("$n, $k, $h, index: `$studentsIndex`, program: `$programToExecute`"))
 
-    fun getExecutionOptions() = ExecutionOptions(programToExecute, Instance(n, k, h), studentsIndex)
+    fun getExecutionOptions(addDashInArgsList: Boolean = false) =
+            ExecutionOptions(programToExecute, Instance(n, k, h), studentsIndex, addDashInArgsList)
 
     fun getInstancesDir() =
             if(instancesDir.isEmpty())
