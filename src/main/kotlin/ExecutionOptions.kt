@@ -4,7 +4,7 @@ data class ExecutionOptions(var programPath : String, val instance: Instance, va
     val extension = programPath.split('.').last()
     fun getArgumentsList() =
             if(addDashInArgsList)
-                "$programPath -n ${instance.n} -k ${instance.k} -h ${instance.h} -i $studentIndex"
+                "$programPath -n ${instance.n} -k ${instance.k} -h ${instance.h}"
             else
-                "$programPath ${instance.n} ${instance.k} ${instance.h} $studentIndex"
+                "$programPath ${instance.n} ${instance.k} ${instance.h}"
 }
