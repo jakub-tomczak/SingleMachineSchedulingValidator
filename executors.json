@@ -6,9 +6,9 @@
     "executorPath": "python"
   },
   {
-    "extension" : [
+    "extension": [
       "jar"
     ],
-    "executorPath": "java"
+    "executorPath": "java -jar"
   }
 ]
