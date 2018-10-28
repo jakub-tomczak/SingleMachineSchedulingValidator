@@ -9,7 +9,7 @@ class ResultValidator(private val application: Application, private val instance
         if(isOrderingFeasible(loadResults(), loadInstance())) {
             println("OK, feasible solution.")
         } else {
-            println("Result is not valid.")
+            println("Result is not valid or failed to load a file.")
         }
 
 
