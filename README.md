@@ -4,6 +4,13 @@ program/script solving single machine tasks scheduling. This project is a part o
 
 Problem description and sample instances steams from [J E Beasley's homepage](http://people.brunel.ac.uk/~mastjjb/jeb/orlib/schinfo.html).
 
+## Requirements
+* Java 8 (JRE >= 1.8)
+* Kotlin >= 1.2.7
+
+If using jar from a zip archive, ensure that Instances folder exists and contains files with test instances.
+Check whether `executors.json` exists and contains list with executors. Set commands appropriate to the files extensions.
+
 ## Command line arguments
 First and foremost, there are 4 arguments:
 * `-n` number of tasks [10,20,50,100,200,500,1000]
