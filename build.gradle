@@ -33,6 +33,28 @@ jar {
     }
 }
 
+task copyInstancesFiles(type: Copy){
+    from '/'
+    include "sch*.txt"
+    into "$buildDir/libs/instances"
+}
+
+task copyExecutorsFile(type: Copy){
+    from 'executors.json'
+    into "$buildDir/libs"
+}
+
+task packageDistribution(type: Zip) {
+    jar.execute()
+    copyExecutorsFile.execute()
+    copyInstancesFiles.execute()
+
+    baseName = 'InstanceRunner'
+    from "$buildDir/libs"
+    doLast {
+        println "Packed files to $archivePath."
+    }
+}
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }

@@ -91,6 +91,6 @@ class Application {
         private set
 
     //needed if instance or output files are in the different directory than an executable
-    private var instancesDir = ""
+    private var instancesDir = "instances"
     private var outputDir = ""
 }
