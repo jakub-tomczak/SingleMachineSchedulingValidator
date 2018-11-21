@@ -3,6 +3,7 @@ package instanceRunner
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
+import kotlin.system.exitProcess
 
 class ResultValidator(private val application: Application, private val instance: Instance) {
     fun validateResult() =
@@ -59,12 +60,13 @@ class ResultValidator(private val application: Application, private val instance
                     .bufferedReader()
                     .use {
                         loadedResult.result = it.readLine().toDouble().toInt()
-
                         loadedResult.tasksOrder
                                 .addAll(
                                         it.readLine()
                                                 .split(" ")
-                                                .map { x -> x.toInt() })
+                                                .asSequence()
+                                                .filter { x -> !x.isNullOrBlank() }
+                                                .map { x -> x.toInt() }.toList())
                     }
 
         } catch (e: FileNotFoundException) {
@@ -72,6 +74,9 @@ class ResultValidator(private val application: Application, private val instance
         } catch(e: IOException) {
             //reading out of file
             println("Error while loading an instance from a file $filename.\nError: ${e.message}")
+        } catch (e: NumberFormatException) {
+            println("Error while parsing tasks list.\nError: ${e.message}")
+            exitProcess(-1)
         }
         return loadedResult
     }
