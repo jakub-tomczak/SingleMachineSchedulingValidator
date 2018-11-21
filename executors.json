@@ -10,5 +10,11 @@
       "jar"
     ],
     "executorPath": "java -jar"
+  },
+  {
+    "extension": [
+      "bat"
+    ],
+    "executorPath": ""
   }
 ]

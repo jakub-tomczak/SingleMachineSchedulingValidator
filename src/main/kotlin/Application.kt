@@ -21,7 +21,7 @@ class Application {
             println("Could not parse arguments. Error ${exception.javaClass}, message: \n${exception.message}")
         }
 
-        //TODO
+        //TODO 
         //add loading options from JSON
         validateArguments()
     }
@@ -58,10 +58,14 @@ class Application {
         n = args[0].toInt()
         k = args[1].toInt()
         h = args[2].toDouble()
-        studentsIndex = args[3]
+        programToExecute = args[3]
 
         if(args.size == 5){
-            programToExecute = args[4]
+            studentsIndex = args[4]
+        } else {
+            val splittedProgramToExecute = programToExecute.split(".")
+            studentsIndex = programToExecute.split(".").getOrElse(0)
+                { throw CmdLineException(null, "Cannot get student index from program's name.", null)}
         }
     }
 
@@ -90,6 +94,9 @@ class Application {
     var studentsIndex = ""
         private set
 
+    @Option(name="-mode", usage = "Mode {batch, single}.")
+    var mode = "single"
+        private set
     //needed if instance or output files are in the different directory than an executable
     private var instancesDir = "instances"
     private var outputDir = ""
