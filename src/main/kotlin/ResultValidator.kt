@@ -3,6 +3,7 @@ package instanceRunner
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
+import java.nio.file.Paths
 import kotlin.system.exitProcess
 
 class ResultValidator(private val application: Application, private val instance: Instance) {
@@ -15,12 +16,12 @@ class ResultValidator(private val application: Application, private val instance
 
 
     private fun loadInstance() : InstanceData {
-        val filename = "${application.getInstancesDir()}${instance.getInstanceFilename()}"
+        val filename = Paths.get(application.getInstancesDir(), instance.getInstanceFilename())
         val instanceData = InstanceData(instance.n, instance.k)
         println("Trying to load instance from `$filename`. k = ${instanceData.k}.")
         try{
             val indexedK = instanceData.k - 1
-            File(filename)
+            File(filename.toUri())
                     .inputStream()
                     .bufferedReader()
                     .useLines {
@@ -50,12 +51,13 @@ class ResultValidator(private val application: Application, private val instance
     }
 
     private fun loadResults() : OrderingResult {
-        val filename = "${application.getOutputDir()}${instance.getInstanceOutputFilename(application.studentsIndex)}"
+        val executionOptions = application.getExecutionOptions(false)
+        val filename = Paths.get(executionOptions.outputFileDirectory, executionOptions.getOutputFilename())
         val loadedResult = OrderingResult(0)
         println("Trying to open results from `$filename`.")
         //load results and save in loadedResult
         try {
-            File(filename)
+            File(filename.toUri())
                     .inputStream()
                     .bufferedReader()
                     .use {

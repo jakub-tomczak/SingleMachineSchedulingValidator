@@ -4,10 +4,13 @@ import kotlin.system.exitProcess
 
 fun main(args: Array<String>){
     val application = Application().apply {
-        this.parseCommandLineArguments(args, useSimpleParser = true)
+        this.parseCommandLineArguments(args)
     }
 
     val executionOptions = application.getExecutionOptions()
+    executionOptions.copyOutputFile = true
+    executionOptions.outputFileDirectory = "calculatedResults"
+
     val executors = ProgramRunner.loadExecutors("executors.json")
     if(executors.isEmpty() && !application.programToExecute.isEmpty())
     {
@@ -15,7 +18,7 @@ fun main(args: Array<String>){
         exitProcess(0)
     }
 
-    if(application.programToExecute.isEmpty()) {
+    if(application.checkOutFile) {
         //check only .out file
         ResultValidator(application, executionOptions.instance)
                 .validateResult()

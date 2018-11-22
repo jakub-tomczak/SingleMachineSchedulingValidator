@@ -6,6 +6,10 @@ import com.beust.klaxon.KlaxonException
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
 import kotlin.system.exitProcess
 import kotlin.system.measureTimeMillis
 
@@ -17,14 +21,27 @@ class ProgramRunner(var executionOptions : ExecutionOptions, val executors : Arr
             println("CWD is ${System.getProperty("user.dir")}.")
             try{
                 val executionTime = measureTimeMillis {executeInner(executionString)}
+                moveToOutDirectoryIfNeeded()
                 return ExecutionResult(lastLaunchResult, executionTime)
             } catch(e : IOException) {
-                println("Couldn't find the executor `${it.executorPath}`.")
+                if(executionOptions.copyOutputFile){
+                    println("Error during executing an external program, error message: ${e.message}")
+                } else {
+                    println("Couldn't find the executor `${it.executorPath}`.")
+                }
                 exitProcess(-1)
             }
         }
         println("No appropriate executor found for the extension `${executionOptions.extension}`.")
         exitProcess(-1)
+    }
+
+    private fun moveToOutDirectoryIfNeeded() {
+        if(executionOptions.copyOutputFile && lastLaunchResult == 0){
+            executionOptions.createOutputDirIfNotExist()
+            val outputFilename = Paths.get(executionOptions.outputFileDirectory, executionOptions.getOutputFilename())
+            Files.move(Paths.get(executionOptions.getOutputFilename()), Paths.get(outputFilename.toUri()), StandardCopyOption.REPLACE_EXISTING)
+        }
     }
 
     private fun executeInner(executionString: String){

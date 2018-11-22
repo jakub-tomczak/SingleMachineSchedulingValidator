@@ -1,35 +1,32 @@
 package instanceRunner
 
-import org.kohsuke.args4j.CmdLineParser
-import org.kohsuke.args4j.Option
 import org.kohsuke.args4j.CmdLineException
 import java.io.File
 import kotlin.system.exitProcess
 
 class Application {
-    fun parseCommandLineArguments(args: Array<String>, useSimpleParser: Boolean = false) {
+    fun parseCommandLineArguments(args: Array<String>) {
         try {
-            if(useSimpleParser){
-                simpleParser(args)
-            } else {
-                advancedParser(args)
-            }
-            println("Runner parameters: n=$n, k=$k, h=$h, program=`$programToExecute`, index=`$studentsIndex`.")
+            simpleParser(args)
+            println("Runner parameters: n=$n, k=$k, h=$h, program=`$programToExecute`, index=`${getStudentIndex()}`.")
         } catch(exception : CmdLineException) {
             println("Could not parse arguments. Error message: \n${exception.message}")
         } catch (exception: NumberFormatException) {
             println("Could not parse arguments. Error ${exception.javaClass}, message: \n${exception.message}")
         }
 
-        //TODO 
-        //add loading options from JSON
         validateArguments()
     }
 
-    fun printArgs() = println(String.format("$n, $k, $h, index: `$studentsIndex`, program: `$programToExecute`"))
+    fun getExecutionOptions(addDashInArgsList: Boolean = false): ExecutionOptions {
+        executionOption.addDashInArgsList = addDashInArgsList
+        return executionOption
+    }
 
-    fun getExecutionOptions(addDashInArgsList: Boolean = false) =
-            ExecutionOptions(programToExecute, Instance(n, k, h), studentsIndex, addDashInArgsList)
+    fun getStudentIndex() = if(studentsIndex.isNullOrBlank())
+            programToExecute.split(".").first()
+        else
+            studentsIndex
 
     fun getInstancesDir() =
             if(instancesDir.isEmpty())
@@ -58,46 +55,40 @@ class Application {
         n = args[0].toInt()
         k = args[1].toInt()
         h = args[2].toDouble()
-        programToExecute = args[3]
+        programToExecute = if(args.size == 5)
+            "${args[3]}.${args[4]}"
+        else
+            "${args[3]}.$programToExecuteExtension"
+        studentsIndex =
+            programToExecute.split(".").first()
 
-        if(args.size == 5){
-            studentsIndex = args[4]
-        } else {
-            val splittedProgramToExecute = programToExecute.split(".")
-            studentsIndex = programToExecute.split(".").getOrElse(0)
-                { throw CmdLineException(null, "Cannot get student index from program's name.", null)}
-        }
+        checkOutFile = args.size == 6 && args[5] == "out"
+
     }
 
-    private fun advancedParser(args: Array<String>){
-        val parser = CmdLineParser(this)
-        parser.parseArgument(args.toList())
-    }
-
-    @Option(name = "-p", usage = "Name of the program to be executed.")
     var programToExecute = ""
         private set
 
-    @Option(name="-n", usage = "Number of tasks.")
     var n = 0
         private set
 
-    @Option(name="-k", usage = "Instance number.")
     var k = 0
         private set
 
-    @Option(name = "-h", usage = "Due date's coefficient.")
     var h = 0.0
         private set
 
-    @Option(name="-index", usage = "Index of a student that written the program.")
-    var studentsIndex = ""
+    var checkOutFile = false
         private set
 
-    @Option(name="-mode", usage = "Mode {batch, single}.")
-    var mode = "single"
-        private set
+    private var studentsIndex = ""
+
+    private val executionOption by lazy { ExecutionOptions(programToExecute, Instance(n, k, h), getStudentIndex()) }
     //needed if instance or output files are in the different directory than an executable
     private var instancesDir = "instances"
     private var outputDir = ""
+
+    companion object {
+        const val programToExecuteExtension: String  = "bat"
+    }
 }
