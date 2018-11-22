@@ -2,7 +2,7 @@ package instanceRunner
 
 import java.io.File
 
-data class ExecutionOptions(var programPath : String, val instance: Instance, val studentIndex : String){
+data class ExecutionOptions(var programPath : String, var instance: Instance, val studentIndex : String){
     val extension = programPath.split('.').last()
 
     var copyOutputFile = true
@@ -18,8 +18,7 @@ data class ExecutionOptions(var programPath : String, val instance: Instance, va
     fun getOutputFilename() = instance.getInstanceOutputFilename(studentIndex)
     fun createOutputDirIfNotExist() {
         val fileHandle = File(outputFileDirectory)
-        if(!fileHandle.exists())
-        {
+        if (!fileHandle.exists()) {
             fileHandle.mkdirs()
         }
     }

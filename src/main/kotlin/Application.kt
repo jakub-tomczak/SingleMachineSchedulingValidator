@@ -1,7 +1,11 @@
 package instanceRunner
 
+import com.beust.klaxon.JsonReader
+import com.beust.klaxon.Klaxon
+import com.beust.klaxon.KlaxonException
 import org.kohsuke.args4j.CmdLineException
 import java.io.File
+import java.io.FileNotFoundException
 import kotlin.system.exitProcess
 
 class Application {
@@ -47,7 +51,7 @@ class Application {
     }
 
     private fun simpleParser(args: Array<String>){
-        if(args.size !in 4..5 step 1){
+        if(args.size !in 4..6 step 1){
             println("Expected 4 or 5 arguments (programs name is optional). Got ${args.size}.")
             exitProcess(1)
         }
@@ -62,8 +66,8 @@ class Application {
         studentsIndex =
             programToExecute.split(".").first()
 
-        checkOutFile = args.size == 6 && args[5] == "out"
-
+        checkOutFile = args.size > 4 && args.contains("out")
+        batchMode = args.size > 4 && args.contains("batch")
     }
 
     var programToExecute = ""
@@ -81,14 +85,44 @@ class Application {
     var checkOutFile = false
         private set
 
+    var batchMode = false
+        private set
+
     private var studentsIndex = ""
 
     private val executionOption by lazy { ExecutionOptions(programToExecute, Instance(n, k, h), getStudentIndex()) }
     //needed if instance or output files are in the different directory than an executable
     private var instancesDir = "instances"
     private var outputDir = ""
+    private var batchSettingsFilename = "batch.json"
 
     companion object {
+        fun loadBatchSettings(executorsFilePath : String) : ArrayList<BatchSettings>{
+            val parser = Klaxon()
+            val executors = arrayListOf<BatchSettings>()
+            try{
+                JsonReader(File(executorsFilePath).reader()).use {
+                    reader ->
+                    reader.beginArray {
+                        while (reader.hasNext()){
+                            executors += parser.parse<BatchSettings>(reader)!!
+                        }
+                    }
+                }
+            } catch(e: FileNotFoundException)
+            {
+                println("File $executorsFilePath not found.")
+            } catch (e: KlaxonException)
+            {
+                println("Error occurred when reading JSON file. Error message `${e.message}`")
+            } catch (e : NoSuchElementException)
+            {
+                println("Error while parsing JSON. Check whether JSON file has a valid syntax. Error message `${e.message}`")
+            }
+            return executors
+        }
         const val programToExecuteExtension: String  = "bat"
     }
 }
+
+data class BatchSettings(val n: ArrayList<Int>, val k: ArrayList<Int>, val h: ArrayList<Double>)

@@ -7,12 +7,8 @@ import java.nio.file.Paths
 import kotlin.system.exitProcess
 
 class ResultValidator(private val application: Application, private val instance: Instance) {
-    fun validateResult() =
-        if(isOrderingFeasible(loadResults(), loadInstance())) {
-            println("OK, feasible solution.")
-        } else {
-            println("Result is not valid or failed to load a file.")
-        }
+    fun validateResult(): Boolean =
+        isOrderingFeasible(loadResults(), loadInstance())
 
 
     private fun loadInstance() : InstanceData {
