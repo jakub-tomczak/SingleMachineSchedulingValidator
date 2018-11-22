@@ -92,7 +92,7 @@ class Application {
 
     private val executionOption by lazy { ExecutionOptions(programToExecute, Instance(n, k, h), getStudentIndex()) }
     //needed if instance or output files are in the different directory than an executable
-    private var instancesDir = "instances"
+    private var instancesDir = ""
     private var outputDir = ""
     private var batchSettingsFilename = "batch.json"
 
