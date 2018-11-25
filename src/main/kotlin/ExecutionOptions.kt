@@ -2,7 +2,7 @@ package instanceRunner
 
 import java.io.File
 
-data class ExecutionOptions(var programPath : String, var instance: Instance, val studentIndex : String){
+data class ExecutionOptions(var programPath : String, var instance: Instance, var studentIndex : String){
     val extension = programPath.split('.').last()
 
     var copyOutputFile = true

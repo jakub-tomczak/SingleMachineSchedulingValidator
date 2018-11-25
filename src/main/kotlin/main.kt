@@ -3,15 +3,11 @@ package instanceRunner
 import kotlin.system.exitProcess
 
 fun main(args: Array<String>){
-    val n = arrayOf(10, 20, 50, 100, 200, 500, 1000)
-    val k = 1..10
-    val h = arrayOf(.2, .4, .6, .8)
-
     val application = Application().apply {
         this.parseCommandLineArguments(args)
     }
 
-    val executionOptions = application.getExecutionOptions()
+    val executionOptions = application.getExecutionOptionsFromCmdArgs(addDashInArgsList = false)
 
     executionOptions.copyOutputFile = true
     executionOptions.outputFileDirectory = "calculatedResults"
@@ -25,42 +21,47 @@ fun main(args: Array<String>){
 
     if(application.checkOutFile) {
         //check only .out file
-        ResultValidator(application, executionOptions.instance)
-                .validateResult()
+        val result = ExecutionResult(0, 0)
+        ResultValidator(application, executionOptions)
+                .validateResult(result)
     } else {
-        val programRunner = ProgramRunner(executionOptions, executors)
-
         var totalSuccess = 0
         if(application.batchMode){
-            val instances = Application.loadBatchSettings("batch.json")
-            for(instance in instances){
-                for(n in instance.n)
-                    for(k in instance.k)
-                        for(h in instance.h){
-                            executionOptions.instance = Instance(n, k, h)
-                            totalSuccess += if(executeInstance(application, executionOptions, programRunner)) 1 else 0
+            val programs = application.getStudentsPrograms().take(1)
+            val instances = application.getInstancesForBatch().take(1)
+            val result = arrayListOf<ExecutionResult>()
+            programs.forEach {
+                program ->
+                run {
+                    result.addAll( instances.asSequence().map {
+                        val execOptions = ExecutionOptions(program, it, program.take(6))
+                        executeInstance(application, execOptions, executors).also {
+                            totalSuccess += if(it.isSolutionFeasible)  1 else 0
                         }
+                    }.toList())
+                }
             }
-            print("Total successes $totalSuccess/${instances.asSequence().sumBy { x -> x.n.size * x.k.size * x.h.size }}")
+            print("Total successes $totalSuccess/${result.size}")
         } else {
-            executeInstance(application, executionOptions, programRunner)
+            executeInstance(application, executionOptions, executors)
         }
 
     }
 }
 
-fun executeInstance(application: Application, executionOptions: ExecutionOptions, programRunner: ProgramRunner): Boolean {
-    val executionResult = programRunner.execute()
+fun executeInstance(application: Application, executionOptions: ExecutionOptions, executors: ArrayList<Executor>) : ExecutionResult {
+    val executionResult = ProgramRunner(executionOptions, executors).execute()
 
-    val result = ResultValidator(application, executionOptions.instance)
-            .validateResult()
-    if(result){
+    ResultValidator(application, executionOptions)
+            .validateResult(executionResult)
+
+    if(executionResult.isSolutionFeasible){
         println("OK, feasible solution.")
     } else {
-        println("Result is not valid or failed to load a file.")
+        println(executionResult.message)
     }
     println("Execution code: ${executionResult.executionCode}, execution time ${executionResult.executionTime} ms.")
     if (executionResult.executionCode != 0)
         println("Check whether program's path is correct or it ends up correctly.")
-    return result
+    return executionResult
 }
