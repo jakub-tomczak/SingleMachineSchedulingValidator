@@ -5,8 +5,8 @@ import java.io.File
 data class ExecutionOptions(var programPath : String, var instance: Instance, var studentIndex : String){
     val extension = programPath.split('.').last()
 
-    var copyOutputFile = true
-    var outputFileDirectory = ""
+    var moveOutputFile = true
+    var outputFileDirectory = "ProgramOutputs"
     var addDashInArgsList = false
 
     fun getArgumentsList() =

@@ -5,4 +5,5 @@ class ExecutionResult(val executionCode: Int, val executionTime : Long){
     var givenResult = 0
     var calculatedResult = 0
     var message = ""
+    var bestResult = 1
 }

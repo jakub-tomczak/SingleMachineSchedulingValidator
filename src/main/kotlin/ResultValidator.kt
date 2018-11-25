@@ -19,6 +19,7 @@ class ResultValidator(private val application: Application, private val executio
                 it.message = "Cost from result file is not correct, from file ${it.givenResult}, expected ${it.calculatedResult}"
             } else {
                 it.isSolutionFeasible = true
+                it.bestResult = getBestResult(executionOptions).bestResult
             }
         }
     }
@@ -26,7 +27,8 @@ class ResultValidator(private val application: Application, private val executio
     private fun loadResults() : OrderingResult {
         val filename = Paths.get(executionOptions.outputFileDirectory, executionOptions.getOutputFilename())
         val loadedResult = OrderingResult(0)
-        println("Trying to open results from `$filename`.")
+        if(!application.batchMode)
+            println("Trying to open results from `$filename`.")
         //load results and save in loadedResult
         try {
             File(filename.toUri())
@@ -40,7 +42,7 @@ class ResultValidator(private val application: Application, private val executio
                                         its
                                                 .split(" ")
                                                 .asSequence()
-                                                .filter { x -> !x.isNullOrBlank() }
+                                                .filter { x -> !x.isBlank() }
                                                 .map { x -> x.toInt() }.toList())
                     }
 
@@ -68,4 +70,8 @@ class ResultValidator(private val application: Application, private val executio
                 (currentLength - dueDate) * task.b
         }.sum()
     }
+
+    private fun getBestResult(executionOptions: ExecutionOptions) =
+        application.bestResults.filter { x -> x.instance == executionOptions.instance }.first()
+
 }

@@ -7,37 +7,33 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
-import kotlin.system.exitProcess
 import kotlin.system.measureTimeMillis
 
-class ProgramRunner(var executionOptions : ExecutionOptions, val executors : ArrayList<Executor>) {
+class ProgramRunner(var executionOptions : ExecutionOptions, private val executors : ArrayList<Executor>) {
     fun execute() : ExecutionResult{
         getExecutorBasedFileOnExtension()?.let{
             val executionString = "${it.executorPath} ${executionOptions.getArgumentsList()}"
             println("Trying to execute `$executionString`.")
-            println("CWD is ${System.getProperty("user.dir")}.")
+            //println("CWD is ${System.getProperty("user.dir")}.")
             try{
                 val executionTime = measureTimeMillis {executeInner(executionString)}
                 moveToOutDirectoryIfNeeded()
                 return ExecutionResult(lastLaunchResult, executionTime)
             } catch(e : IOException) {
-                if(executionOptions.copyOutputFile){
+                if(executionOptions.moveOutputFile){
                     println("Error during executing an external program, error message: ${e.message}")
                 } else {
                     println("Couldn't find the executor `${it.executorPath}`.")
                 }
-                exitProcess(-1)
             }
         }
-        println("No appropriate executor found for the extension `${executionOptions.extension}`.")
-        exitProcess(-1)
+        return ExecutionResult(-1, 0)
     }
 
     private fun moveToOutDirectoryIfNeeded() {
-        if(executionOptions.copyOutputFile && lastLaunchResult == 0){
+        if(executionOptions.moveOutputFile && lastLaunchResult == 0){
             executionOptions.createOutputDirIfNotExist()
             val outputFilename = Paths.get(executionOptions.outputFileDirectory, executionOptions.getOutputFilename())
             Files.move(Paths.get(executionOptions.getOutputFilename()), Paths.get(outputFilename.toUri()), StandardCopyOption.REPLACE_EXISTING)
