@@ -36,8 +36,8 @@ class ProgramRunner(var executionOptions : ExecutionOptions, private val executo
         if(executionOptions.moveOutputFile && lastLaunchResult == 0){
             executionOptions.createOutputDirIfNotExist()
             val outputFilename = Paths.get(executionOptions.outputFileDirectory, executionOptions.getOutputFilename())
-            if(!File(outputFilename.toUri()).exists()){
-                throw FileNotFoundException("File ${outputFilename.toAbsolutePath()} couldn't be found.")
+            if(!File(executionOptions.getOutputFilename()).exists()){
+                throw FileNotFoundException("File ${executionOptions.getOutputFilename()} couldn't be found.")
             }
             Files.move(Paths.get(executionOptions.getOutputFilename()), Paths.get(outputFilename.toUri()), StandardCopyOption.REPLACE_EXISTING)
         }
