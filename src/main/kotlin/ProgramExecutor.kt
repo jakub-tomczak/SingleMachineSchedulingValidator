@@ -1,4 +1,4 @@
-package instanceRunner
+package singleMachineTaskScheduler
 
 import com.beust.klaxon.JsonReader
 import com.beust.klaxon.Klaxon
@@ -36,6 +36,9 @@ class ProgramRunner(var executionOptions : ExecutionOptions, private val executo
         if(executionOptions.moveOutputFile && lastLaunchResult == 0){
             executionOptions.createOutputDirIfNotExist()
             val outputFilename = Paths.get(executionOptions.outputFileDirectory, executionOptions.getOutputFilename())
+            if(!File(outputFilename.toUri()).exists()){
+                throw FileNotFoundException("File ${outputFilename.toAbsolutePath()} couldn't be found.")
+            }
             Files.move(Paths.get(executionOptions.getOutputFilename()), Paths.get(outputFilename.toUri()), StandardCopyOption.REPLACE_EXISTING)
         }
     }

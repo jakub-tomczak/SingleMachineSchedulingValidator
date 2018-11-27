@@ -1,6 +1,8 @@
-package instanceRunner
+package singleMachineTaskScheduler
 
 import org.kohsuke.args4j.CmdLineException
+import singleMachineTaskScheduler.data.Instance
+import singleMachineTaskScheduler.io.IOManager
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -42,7 +44,7 @@ class Application {
                 instancesDir + File.separatorChar
 
     fun getInstance(instance: Instance) =
-            instancesData.asSequence().filter { x -> x.n == instance.n && x.k == instance.k-1 }.firstOrNull() ?: throw Exception("No instance found")
+            instancesData.asSequence().filter { x -> x.n == instance.n && x.k == instance.k-1 }.firstOrNull()
 
 
     private fun validateArguments() {
@@ -132,112 +134,15 @@ class Application {
 
     private var studentsIndex = ""
 
-    private val instancesData by lazy { loadInstances(this) }
-    val bestResults by lazy { loadBestResults(this) }
+    private val instancesData by lazy { ioManager.loadInstances(instancesDir) }
+    val bestResults by lazy { ioManager.loadBestResults(bestResultsDirectory = "", bestResultsFilename = bestResultsFilename) }
     //needed if instance or output files are in the different directory than an executable
-    private var instancesDir = ""
+    private val ioManager = IOManager()
+    private var instancesDir = "Instances"
     private var outputDir = ""
     private var batchSettingsFilename = "instances.txt"
     private var studentsProgramsPath = "."
     private val programToExecuteExtension = "bat"
 
     private val bestResultsFilename = "best_results.txt"
-
-    companion object {
-        private const val numberOfInstancesInFile = 10
-        private val nValues = arrayListOf(10, 20, 50, 100, 200, 500, 1000)
-        private val hValues = arrayListOf(.2, .4, .6, .8)
-        fun loadInstances(application: Application) : ArrayList<InstanceData> {
-            val instances = arrayListOf<InstanceData>()
-
-            val files = nValues
-                    .asSequence()
-                    .map { x ->  File(Paths.get(application.getInstancesDir(), "sch$x.txt").toUri()) }
-                    .filter { x -> x.exists() }
-                    .toList()
-
-            try{
-                files.zip(nValues).map {
-                    val lines = it.first
-                            .inputStream()
-                            .bufferedReader()
-                            .readLines()
-                            .asSequence()
-                            //split strings by " " and only these where are 3 numbers
-                            .map { x -> x.split(" ").filter { item -> item.isNotEmpty() } }
-                            .filter { x -> x.size == 3 }
-                            .map { data -> Task(data[0].toInt(), data[1].toInt(), data[2].toInt()) }
-                            .toList()
-                    //add to instances data
-                    for(i in 0 until numberOfInstancesInFile)
-                        instances.add(
-                                InstanceData(it.second, i)
-                                        .also { instanceData ->  instanceData.addTasks(lines.subList(i*it.second, ((i+1)*it.second))) })
-                }
-            } catch(e : FileNotFoundException) {
-                //file not found
-                println("File has not been found. Error $e")
-            } catch(e: IOException) {
-                //reading out of file
-                println("Error while loading an instance from a file.\nError: ${e.message}")
-            } catch (e : IndexOutOfBoundsException) {
-                println("Malformed instance file.")
-            }
-            return instances
-        }
-        fun loadBestResults(application: Application): ArrayList<BestResult> {
-            val file = File(Paths.get(application.bestResultsFilename).toUri())
-            if (!file.exists()){
-                println("Could not find ${file.absolutePath}.")
-                exit(1)
-            }
-
-            try{
-               val data = file
-                       .inputStream()
-                       .bufferedReader()
-                       .readLines()
-                       .asSequence()
-                       //split strings by " " and only these where are 4 non-empty elements
-                       .map { x -> x.split(" ").filter { item -> item.isNotEmpty() } }
-                       .filter { x -> x.size == 4 }
-                       .toList()
-
-                val bestValues = arrayListOf<BestResult>()
-                for(n in 0 until nValues.size){
-                    for(k in 0 until 10){
-                        for(h in 0 until hValues.size){
-                            val isOptimal = data[n*10+k][h].last() == '*'
-                            val result = data[n*10+k][h].dropLastWhile { x -> x == '*' }.toInt()
-                            bestValues.add(BestResult(Instance(nValues[n], k+1, hValues[h]), bestResult = result, isOptimal = isOptimal))
-                        }
-                    }
-                }
-//               nValues.mapIndexed { nIndex, n -> {
-//                   (0 until 10).map { k -> {
-//                       hValues.asSequence().mapIndexed { hIndex, h -> {
-//                           val isOptimal = data[n * 10 + k][hIndex].last() == '*'
-//                           val result = data[nIndex * 10 + k][hIndex].dropLastWhile { x -> x == '*' }
-//                           BestResult(Instance(n, k+1, h), result.toInt(), isOptimal)
-//                       }
-//                       }
-//                   }
-//                   }
-//               }
-//               }
-                return bestValues
-            } catch(e : FileNotFoundException) {
-                //file not found
-                println("File has not been found. Error $e")
-            } catch(e: IOException) {
-                //reading out of file
-                println("Error while loading an best results from a file.\nError: ${e.message}")
-            } catch (e : IndexOutOfBoundsException) {
-                println("Malformed best results file.")
-            }
-            return arrayListOf()
-        }
-    }
-
 }
-data class BestResult(val instance: Instance, val bestResult: Int, val isOptimal: Boolean)

@@ -1,5 +1,6 @@
-package instanceRunner
+package singleMachineTaskScheduler
 
+import singleMachineTaskScheduler.data.Instance
 import java.io.File
 
 data class ExecutionOptions(var programPath : String, var instance: Instance, var studentIndex : String){
@@ -15,7 +16,7 @@ data class ExecutionOptions(var programPath : String, var instance: Instance, va
             else
                 "$programPath ${instance.n} ${instance.k} ${instance.h}"
 
-    fun getOutputFilename() = instance.getInstanceOutputFilename(studentIndex)
+    fun getOutputFilename() = Instance.getInstanceOutputFilename(instance, studentIndex)
     fun createOutputDirIfNotExist() {
         val fileHandle = File(outputFileDirectory)
         if (!fileHandle.exists()) {

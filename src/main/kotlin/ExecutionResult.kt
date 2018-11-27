@@ -1,4 +1,4 @@
-package instanceRunner
+package singleMachineTaskScheduler
 
 class ExecutionResult(val executionCode: Int, val executionTime : Long){
     var isSolutionFeasible = false

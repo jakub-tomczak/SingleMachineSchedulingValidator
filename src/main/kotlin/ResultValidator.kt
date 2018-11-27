@@ -1,5 +1,7 @@
-package instanceRunner
+package singleMachineTaskScheduler
 
+import singleMachineTaskScheduler.data.InstanceData
+import singleMachineTaskScheduler.data.OrderingResult
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -14,12 +16,17 @@ class ResultValidator(private val application: Application, private val executio
         {
             it.message = "Number of tasks is not correct, ${resultsFromFile.tasksOrder.size} != ${executionOptions.instance.n}"
         } else {
-            it.calculatedResult = calculateCost(resultsFromFile, application.getInstance(executionOptions.instance))
-            if(it.calculatedResult != it.givenResult){
-                it.message = "Cost from result file is not correct, from file ${it.givenResult}, expected ${it.calculatedResult}"
+            val instance = application.getInstance(executionOptions.instance)
+            if(instance != null){
+                it.calculatedResult = calculateCost(resultsFromFile, instance)
+                if(it.calculatedResult != it.givenResult){
+                    it.message = "Cost from result file is not correct, from file ${it.givenResult}, expected ${it.calculatedResult}"
+                } else {
+                    it.isSolutionFeasible = true
+                    it.bestResult = getBestResult(executionOptions).bestResult
+                }
             } else {
-                it.isSolutionFeasible = true
-                it.bestResult = getBestResult(executionOptions).bestResult
+                it.message = "No instance found"
             }
         }
     }

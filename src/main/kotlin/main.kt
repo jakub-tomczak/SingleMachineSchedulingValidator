@@ -1,4 +1,4 @@
-package instanceRunner
+package singleMachineTaskScheduler
 
 import java.io.File
 import kotlin.system.exitProcess
@@ -19,8 +19,6 @@ fun main(args: Array<String>){
         println("Cannot run an external program, there are no executors provided.")
         exitProcess(0)
     }
-
-    Application.loadBestResults(application)
 
     if(application.checkOutFile) {
         //check only .out file
@@ -59,7 +57,12 @@ fun main(args: Array<String>){
             println(finalResult)
 
         } else {
-            executeInstance(application, executionOptions, executors)
+            val executionResult = executeInstance(application, executionOptions, executors)
+            if(executionResult.isSolutionFeasible){
+                println("Feasible solution, cost = ${executionResult.calculatedResult}")
+            } else {
+                println("Execution error, message: ${executionResult.message}")
+            }
         }
 
     }
