@@ -1,7 +1,8 @@
 [
   {
     "extension": [
-      "py"
+      "py",
+      "zip"
     ],
     "executorPath": "python"
   },

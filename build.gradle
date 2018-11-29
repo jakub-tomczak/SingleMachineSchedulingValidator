@@ -22,9 +22,13 @@ dependencies {
     )
 }
 
+sourceSets {
+    main.kotlin.srcDirs += 'src/main/kotlin'
+}
+
 jar {
     manifest {
-        attributes 'Main-Class': 'instanceRunner.MainKt'
+        attributes 'Main-Class': 'singleMachineTaskScheduler.MainKt'
     }
     from {
         configurations.compile.collect {
@@ -35,17 +39,22 @@ jar {
 
 task copyInstancesFiles(type: Copy){
     from '/'
-    include "sch*.txt"
-    into "$buildDir/libs/instances"
+    include "sch*0.txt"
+    into "$buildDir/libs"
 }
 
 task copyExecutorsFile(type: Copy){
     from 'executors.json'
     into "$buildDir/libs"
 }
+task copyBatchFile(type: Copy){
+    from 'batch.json'
+    into "$buildDir/libs"
+}
 
 task packageDistribution(type: Zip) {
     jar.execute()
+    //copyBatchFile.execute()
     copyExecutorsFile.execute()
     copyInstancesFiles.execute()
 

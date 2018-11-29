@@ -40,13 +40,17 @@ fun main(args: Array<String>){
                     result.addAll( instances.asSequence().map {
                             val execOptions = ExecutionOptions(program, it, studentIndex)
                         executeInstance(application, execOptions, executors).also {
-                            if(it.isSolutionFeasible){
+                            totalSuccess += if(it.isSolutionFeasible){
+                                1
+                            } else {
+                                0
+                            }
+                            if(it.isSolutionFeasible || it.executionCode == 0 && it.calculatedResult != it.givenResult){
                                 errors.add(100.0*(it.calculatedResult - it.bestResult)/it.bestResult)
-                                totalSuccess += 1
                             } else {
                                 errors.add(1e6)
-                                totalSuccess += 0
                             }
+                            println("${execOptions.instance.n} ${execOptions.instance.k} ${execOptions.instance.h} ${it.bestResult}")
                         }
                     }.toList())
                     finalResult.add(Pair(studentIndex, errors.sum()/errors.size))

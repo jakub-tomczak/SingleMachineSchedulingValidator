@@ -23,8 +23,8 @@ class ResultValidator(private val application: Application, private val executio
                     it.message = "Cost from result file is not correct, from file ${it.givenResult}, expected ${it.calculatedResult}"
                 } else {
                     it.isSolutionFeasible = true
-                    it.bestResult = getBestResult(executionOptions).bestResult
                 }
+                it.bestResult = getBestResult(executionOptions).bestResult
             } else {
                 it.message = "No instance found"
             }
