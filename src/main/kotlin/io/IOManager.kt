@@ -10,7 +10,7 @@ import java.io.IOException
 import java.nio.file.Paths
 
 class IOManager{
-    fun loadInstances(instancesDir: String, getAsResource: Boolean = true) : List<InstanceData> {
+    fun loadInstances(instancesDir: String, getAsResource: Boolean = false) : List<InstanceData> {
         val instances = arrayListOf<InstanceData>()
 
         try{
@@ -49,7 +49,7 @@ class IOManager{
         }
         return instances
     }
-    fun loadBestResults(bestResultsDirectory: String, bestResultsFilename: String, getAsResource: Boolean = true): List<BestResult> {
+    fun loadBestResults(bestResultsDirectory: String, bestResultsFilename: String, getAsResource: Boolean = false): List<BestResult> {
         val file = if(getAsResource){
             getResource(bestResultsDirectory, bestResultsFilename)
         } else {
