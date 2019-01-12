@@ -19,8 +19,14 @@ class ResultValidator(private val application: Application, private val executio
             val instance = application.getInstance(executionOptions.instance)
             if(instance != null){
                 it.calculatedResult = calculateCost(resultsFromFile, instance)
+
                 if(it.calculatedResult != it.givenResult){
                     it.message = "Cost from result file is not correct, from file ${it.givenResult}, expected ${it.calculatedResult}"
+                } else if(resultsFromFile.tasksOrder.size != instance.n)
+                {
+                    it.message = "Number of tasks in the ordering, ${resultsFromFile.tasksOrder.size}, doesn't match instance size n=${instance.n}"
+                } else if(HashSet(resultsFromFile.tasksOrder).size != instance.n) {
+                    it.message = "There are duplicates in the ordering, ${resultsFromFile.tasksOrder.size}!=${instance.n}"
                 } else {
                     it.isSolutionFeasible = true
                 }
