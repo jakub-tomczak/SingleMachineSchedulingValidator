@@ -138,7 +138,7 @@ class Application {
     val bestResults by lazy { ioManager.loadBestResults(bestResultsDirectory = "", bestResultsFilename = bestResultsFilename) }
     //needed if instance or output files are in the different directory than an executable
     private val ioManager = IOManager()
-    private var instancesDir = "Instances"
+    private var instancesDir = "instances"
     private var outputDir = ""
     private var batchSettingsFilename = "instances.txt"
     private var studentsProgramsPath = "."
